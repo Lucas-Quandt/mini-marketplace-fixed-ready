@@ -481,7 +481,15 @@ const out = rows.map(s => {
 function ensureDateTime(dateStr, hhmm) {
   if (!dateStr || !hhmm) throw new Error("Parâmetros de data/hora ausentes");
   const t = /^\d{2}:\d{2}(:\d{2})?$/.test(hhmm) ? (hhmm.length === 5 ? `${hhmm}:00` : hhmm) : hhmm;
-  const dt = new Date(`${dateStr}T${t}`);
+
+  // Normaliza a data em string (YYYY-MM-DD) quando vier como Date
+  const dateStrNorm = (dateStr instanceof Date) ? dateStr.toISOString().slice(0,10) : String(dateStr);
+
+  // Interpreta o horário como relógio local do prestador (Brasil Nordeste – America/Fortaleza: -03:00 por padrão).
+  // Isso evita o "pulo" de fuso quando o backend serializa para ISO UTC e o frontend mostra no horário local.
+  const tzOffset = process.env.TZ_OFFSET || '-03:00'; // Ajustável via env se necessário
+  const dt = new Date(`${dateStrNorm}T${t}${tzOffset}`);
+
   if (isNaN(dt.getTime())) throw new Error("Horário inválido");
   return dt;
 }

@@ -453,6 +453,19 @@
     }
     alert('Não foi possível cancelar: ' + (lastErr || 'Erro desconhecido'));
   }
+
+  // Stars helpers (somente leitura)
+  function avgRating(svc) {
+    if (typeof (svc?.avgRating) === 'number') return svc.avgRating;
+    if (typeof (svc?.ratingAverage) === 'number') return svc.ratingAverage;
+    if (typeof (svc?.rating) === 'number') return svc.rating;
+    if (Array.isArray(svc?.ratings) && svc.ratings.length) {
+      const sum = svc.ratings.reduce((a, r) => a + (r?.value ?? r?.rating ?? 0), 0);
+      return sum / svc.ratings.length;
+    }
+    return 0;
+  }
+  function pctStars(v) { const val = Math.max(0, Math.min(5, Number(v)||0)); return (val/5)*100; }
 </script>
 
 <style>
@@ -477,6 +490,13 @@
   .badge { display:inline-block; padding:2px 8px; border-radius:999px; border:1px solid #ddd; font-size:.8rem; }
   .card.expanded { box-shadow: 0 0 12px rgba(52,152,219,0.6); border: 2px solid #3498db; transform: scale(1.02); transition: all 0.3s ease; }
   .var-row label.small{font-size:12px;color:#666;}
+
+/* Stars (somente leitura) */
+.stars{position:relative;display:inline-block;font-size:14px;line-height:1;letter-spacing:1px;user-select:none;}
+.stars-bg{color:#cfcfcf;}
+.stars-fill{color:#f5a623;position:absolute;top:0;left:0;white-space:nowrap;overflow:hidden;}
+.stars-wrap{display:inline-flex;align-items:center;gap:6px;}
+.stars-num{font-size:12px;color:#666;}
 </style>
 
 <header>
@@ -538,6 +558,15 @@
           {/if}
 
           <h3 style="margin:8px 0 4px">{s.name}</h3>
+<!-- Estrelas (somente leitura) -->
+<div class="stars-wrap" title={"Avaliação: " + avgRating(s).toFixed(1) + " / 5"}>
+  <div class="stars" aria-label={"Nota " + avgRating(s).toFixed(1) + " de 5"}>
+    <div class="stars-bg">★★★★★</div>
+    <div class="stars-fill" style={"width: " + pctStars(avgRating(s)) + "%"}>★★★★★</div>
+  </div>
+  <span class="stars-num">({avgRating(s).toFixed(1)})</span>
+</div>
+
           <div class="muted">{s.type?.name}</div>
 
           {#if s.provider}

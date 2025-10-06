@@ -4,6 +4,12 @@ Siga passo a passo e o sistema funcionará no seu computador. 🚀
 
 ---
 
+# 🖥️ Link para o Video de demostração do Projeto Rodando
+
+- https://youtu.be/JBoPQDmhycY 
+
+---
+
 ## 🧩 O que é este projeto
 
 Um pequeno **marketplace de serviços**, onde **clientes** contratam **prestadores**.  
@@ -113,12 +119,12 @@ Antes de começar, instale estes programas:
 ### Logins de teste dos clientes que ja foram previamente cadastrados para teste:
 - **Cliente:** `cliente@example.com` — **senha:** `123456`  
 
-- **Prestadores:** `provider{ID}@example.com` (ex.: `provider1@example.com`) — Para a otimização de acesso todos esses prestadores foram cadastrados com a**senha:** `123456`, mais é possivel fazer um novo cadastro com qualquer senha.
- sandyquandt@gmail.com
+- **Prestadores:** `provider{ID}@example.com` (ex.: `provider1@example.com`) — Para a otimização de acesso todos esses prestadores foram cadastrados com a**senha:** `12345`, mais é possivel fazer um novo cadastro com qualquer senha.
+ sandy@gmail.com
  lucasquandt10@gmail.com
- paulo@gmail.com
- suzanamaria@gmail.com
- roberto@gmail.com  
+ jane@gmail.com
+ suzana@gmail.com
+ fernando@gmail.com  
 ---------------------------------------------------------------------------------------------------------------------------- 
 
 ### Verificações rápidas (opcional)
