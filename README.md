@@ -44,7 +44,7 @@ Antes de começar, instale estes programas:
 
 5. Quando terminar, você verá mensagens como:
    ```
-   Local: http://localhost:5173
+   Local: http://localhost:5173     E PRONTO PROJETO RODANDO!!
    ```
 
    ✅ **Frontend:** abra [http://localhost:5173](http://localhost:5173)  
@@ -54,8 +54,90 @@ Antes de começar, instale estes programas:
    ```bash
    docker compose down
    ```
+ **LEMBRANDO**
+ Do Jeito que está rodando ai o projeto vai aparecer sem cadastro de ninguem ou seja você sera a primeira pessoa que irá
+ cadastrar um perfil no sistema.
+ 
+ Mas se você quer rodar o sistema e quer que ja apareça alguns outros perfis previamente ja cadastrados para ter uma noção 
+ de como é o sistema com varios perfis de outras pessoas cadastradas siga os passo a seguir que ensina como rodar o SEED
+ e assim o sistema ja ter acesso ao banco de perfis de outro usuarios.
 
----
+---------------------------------------------------------------------------------------------------------------------------
+
+## 📦 Como popular o banco com dados de exemplo (Seed)
+
+> Este passo **não altera o código** do projeto. Ele apenas preenche o MySQL com **prestadores**, **serviços**, **fotos** e **tipos de serviço** para que tudo apareça igual ao seu ambiente local.
+
+### Pré‑requisitos
+- A pasta **`seed/`** precisa existir na raiz do projeto com o arquivo **`seed.sql`**.
+- As fotos devem estar versionadas em **`backend/uploads/providers/`**.
+
+### Passo a passo (Docker Compose)
+1. **Suba os serviços** (isso cria as tabelas no MySQL):
+   ```bash
+   docker compose up -d
+   ```
+
+2. **Descubra o container do MySQL** (opcional, só para facilitar os próximos comandos):
+   ```bash
+   MYSQL_ID=$(docker compose ps -q mysql)
+   echo "$MYSQL_ID"
+   ```
+
+3. **Importe o seed** (escolha UMA forma):
+
+   **Forma A — usando variável `MYSQL_ID`:**
+   ```bash
+   docker exec -i $MYSQL_ID mysql -u root -proot mini_marketplace < seed/seed.sql
+   ```
+
+   **Forma B — copiando o arquivo para dentro do container:**
+   ```bash
+   docker cp seed/seed.sql $MYSQL_ID:/seed.sql
+   docker exec -it $MYSQL_ID bash -lc "mysql -u root -proot mini_marketplace < /seed.sql"
+   ```
+
+   > Se sua senha do MySQL **não** for `root`, troque `-proot` pela senha correta.  
+   > Se o nome do banco for outro, troque `mini_marketplace` pelo nome real.
+
+4. **(Opcional) Reinicie o backend** para limpar caches:
+   ```bash
+   docker compose restart backend
+   ```
+
+5. **Acesse o sistema:**
+   - Frontend: <http://localhost:5173>
+   - API: <http://localhost:4000>
+   
+----------------------------------------------------------------------------------------------------------------------------   
+### Logins de teste dos clientes que ja foram previamente cadastrados para teste:
+- **Cliente:** `cliente@example.com` — **senha:** `123456`  
+
+- **Prestadores:** `provider{ID}@example.com` (ex.: `provider1@example.com`) — Para a otimização de acesso todos esses prestadores foram cadastrados com a**senha:** `123456`, mais é possivel fazer um novo cadastro com qualquer senha.
+ sandyquandt@gmail.com
+ lucasquandt10@gmail.com
+ paulo@gmail.com
+ suzanamaria@gmail.com
+ roberto@gmail.com  
+---------------------------------------------------------------------------------------------------------------------------- 
+
+### Verificações rápidas (opcional)
+Confirme se os dados entraram:
+```bash
+docker exec -it $MYSQL_ID bash -lc 'echo "SELECT role, COUNT(*) FROM users GROUP BY role;" | mysql -u root -proot mini_marketplace'
+```
+Veja alguns serviços:
+```bash
+docker exec -it $MYSQL_ID bash -lc 'echo "SELECT id, providerId, name FROM services ORDER BY id LIMIT 10;" | mysql -u root -proot mini_marketplace'
+```
+
+### Dicas
+- O MySQL pode mostrar um **aviso** sobre senha na linha de comando; é normal.
+- Se der erro de “tabela não existe”, aguarde 10–20s após `docker compose up -d` e importe de novo.
+- Se as pastas não aparecerem no GitHub, verifique o `.gitignore` ou force o add:  
+  `git add -f seed/ backend/uploads/providers/`
+
+----------------------------------------------------------------------------------------------------------------------------
 
 ## ⚙️ Se quiser rodar sem Docker (opcional)
 
@@ -109,5 +191,8 @@ docker compose up
 ```
 
 ---
+
+---
+
 
 

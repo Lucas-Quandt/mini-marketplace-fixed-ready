@@ -51,6 +51,22 @@
   let services = [];
   let serviceTypes = [];
 
+  // ====== Busca & Filtro (adição mínima, não altera o restante) ======
+  let searchTerm = '';
+  let typeFilter = ''; // id do tipo selecionado (string) ou vazio para "todos"
+
+  // Lista derivada dos serviços já carregados
+  $: filteredServices = (services || []).filter((s) => {
+    const term = (searchTerm || '').trim().toLowerCase();
+    const matchesTerm = !term || (
+      (s.name && String(s.name).toLowerCase().includes(term)) ||
+      (s.description && String(s.description).toLowerCase().includes(term)) ||
+      (s.type?.name && String(s.type.name).toLowerCase().includes(term))
+    );
+    const matchesType = !typeFilter || String(s.type?.id ?? s.typeId ?? '') === String(typeFilter);
+    return matchesTerm && matchesType;
+  });
+
   // Provider lists
   let myServices = [];
   let loadingMyServices = false;
@@ -265,6 +281,7 @@
         user.photoUrl = r.photoUrl;
         ensurePhotosFromProfile();
         await loadServices();
+    loadServiceTypes();
         await loadMyServices();
       } catch (e) { alert(e?.body?.error || 'Erro ao enviar foto'); }
       finally { uploadingPhoto = false; }
@@ -293,6 +310,7 @@
       alert('Serviço criado!');
       sForm = { serviceTypeId:'', name:'', description:'', photosText:'', variations:[{ name:'Padrão', price:'0', durationMinutes:'30' }] };
       await loadServices();
+    loadServiceTypes();
       await loadMyServices();
       await loadMyAvail();
       ensurePhotosFromProfile();
@@ -323,7 +341,8 @@
     catch (e) { alert(e?.body?.error || 'Erro ao remover'); }
   }
 
-  function goPublic() { page='public'; loadServices(); }
+  function goPublic() { page='public'; loadServices();
+    loadServiceTypes(); }
   function goProvider() { page='provider'; if (user?.role==='PROVIDER') { loadMyAvail(); loadMyServices(); loadBookings(); } }
 
   
@@ -335,6 +354,7 @@
   onMount(async () => {
     await loadServiceTypes();
     await loadServices();
+    loadServiceTypes();
   });
 
   let expandedCard = null;
@@ -490,8 +510,24 @@
 <main>
   {#if page === 'public'}
     <h2>Serviços</h2>
+    <!-- Barra de pesquisa e filtro (adição não intrusiva) -->
+    <div class="search-filter" style="display:flex; gap:8px; align-items:center; margin: 8px 0 16px;">
+      <input
+        type="search"
+        placeholder="Pesquisar por nome, descrição ou tipo... (ex.: pintor, manicure, eletricista)"
+        bind:value={searchTerm}
+        style="flex:4; padding:8px 10px; border:1px solid #ddd; border-radius:8px;"
+      />
+      <select bind:value={typeFilter} style="width:160px; padding:8px 10px; border:1px solid #ddd; border-radius:8px;">
+        <option value="">Todos os tipos</option>
+        {#each serviceTypes as t}
+          <option value={t.id}>{t.name}</option>
+        {/each}
+      </select>
+    </div>
+
     <div class="grid">
-      {#each services as s}
+      {#each filteredServices as s}
         <div class="card {expandedCard === s.id ? 'expanded' : ''}" on:click={() => toggleExpand(s.id, s.provider?.id)} style="cursor:pointer;">
           {#if (s.provider?.photoUrl)}
             <img class="cover" alt="foto prestador" src={absolutize(s.provider.photoUrl)} />

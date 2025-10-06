@@ -44,6 +44,8 @@ services:
 
   backend:
     build: ./backend
+    volumes:
+      - ./backend/uploads:/app/uploads
     environment:
       - NODE_ENV=development
       - PORT=4000
