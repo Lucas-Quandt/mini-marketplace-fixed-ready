@@ -6,7 +6,7 @@ Siga passo a passo e o sistema funcionará no seu computador. 🚀
 
 # 🖥️ Link para o Video de demostração do Projeto Rodando
 
-- https://youtu.be/JBoPQDmhycY 
+- https://youtu.be/2w_9BidkkhI
 
 ---
 
